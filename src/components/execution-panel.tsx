@@ -1,11 +1,18 @@
 "use client";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Terminal, Clock } from "lucide-react";
+import { Terminal, Loader2, ChevronDown, ChevronRight } from "lucide-react";
 import ReactMarkdown, { Components } from "react-markdown";
+import { useState, useEffect, useRef } from "react";
+
+interface ExecutionItem {
+  content: string;
+  timestamp: string;
+}
 
 interface ExecutionPanelProps {
-  content: string | null;
+  history: ExecutionItem[];
+  isInProgress?: boolean;
 }
 
 // カスタムコードブロックコンポーネント
@@ -40,13 +47,76 @@ const markdownComponents: Components = {
     );
   },
   pre({ children }) {
-    // preはcodeコンポーネント内で処理するため、そのまま返す
     return <>{children}</>;
   },
 };
 
-export function ExecutionPanel({ content }: ExecutionPanelProps) {
-  if (!content) {
+// 個別の実行結果アイテム
+function ExecutionItem({
+  item,
+  isLatest,
+  isInProgress,
+}: {
+  item: ExecutionItem;
+  isLatest: boolean;
+  isInProgress: boolean;
+}) {
+  const [isExpanded, setIsExpanded] = useState(true);
+
+  return (
+    <div className={`border-b border-slate-200 ${isLatest ? "bg-white" : "bg-slate-50/50"}`}>
+      {/* ヘッダー */}
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="flex w-full items-center gap-2 px-4 py-2 text-left hover:bg-slate-100 transition-colors"
+      >
+        {isExpanded ? (
+          <ChevronDown className="h-3 w-3 text-slate-500" />
+        ) : (
+          <ChevronRight className="h-3 w-3 text-slate-500" />
+        )}
+        <div className="flex items-center gap-2">
+          {isLatest && isInProgress ? (
+            <Loader2 className="h-3 w-3 animate-spin text-blue-600" />
+          ) : (
+            <Terminal className="h-3 w-3 text-green-600" />
+          )}
+          <span className="text-xs font-medium text-slate-700">{item.timestamp}</span>
+        </div>
+        {isLatest && isInProgress && (
+          <span className="ml-auto text-xs text-blue-600">実行中...</span>
+        )}
+      </button>
+
+      {/* コンテンツ */}
+      {isExpanded && (
+        <div className="px-4 pb-4">
+          <div className="prose prose-sm max-w-none prose-headings:text-sm prose-headings:font-semibold prose-p:my-1 prose-ul:my-1 prose-li:my-0 prose-p:text-slate-700">
+            <ReactMarkdown components={markdownComponents}>{item.content}</ReactMarkdown>
+          </div>
+          {isLatest && isInProgress && (
+            <div className="mt-2 flex items-center gap-2 text-xs text-slate-500">
+              <Loader2 className="h-3 w-3 animate-spin" />
+              <span>出力中...</span>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function ExecutionPanel({ history, isInProgress = false }: ExecutionPanelProps) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // 新しい実行結果が追加されたら自動スクロール
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [history]);
+
+  if (history.length === 0) {
     return (
       <div className="flex h-screen flex-col border-l bg-slate-50">
         <div className="flex h-14 shrink-0 items-center gap-2 border-b px-4">
@@ -66,21 +136,35 @@ export function ExecutionPanel({ content }: ExecutionPanelProps) {
 
   return (
     <div className="flex h-screen flex-col border-l bg-slate-50">
+      {/* ヘッダー */}
       <div className="flex h-14 shrink-0 items-center justify-between border-b px-4">
         <div className="flex items-center gap-2">
-          <Terminal className="h-4 w-4 text-green-600" />
+          {isInProgress ? (
+            <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
+          ) : (
+            <Terminal className="h-4 w-4 text-green-600" />
+          )}
           <span className="font-medium">実行結果</span>
+          <span className="rounded-full bg-slate-200 px-2 py-0.5 text-xs text-slate-600">
+            {history.length}件
+          </span>
         </div>
-        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-          <Clock className="h-3 w-3" />
-          <span>Just now</span>
-        </div>
+        {isInProgress && (
+          <span className="text-xs text-blue-600">実行中...</span>
+        )}
       </div>
-      <ScrollArea className="flex-1 overflow-auto">
-        <div className="p-4">
-          <div className="prose prose-sm max-w-none prose-headings:text-base prose-headings:font-semibold prose-p:my-2 prose-ul:my-2 prose-li:my-0">
-            <ReactMarkdown components={markdownComponents}>{content}</ReactMarkdown>
-          </div>
+
+      {/* 実行履歴リスト */}
+      <ScrollArea className="flex-1 min-h-0">
+        <div ref={scrollRef}>
+          {history.map((item, index) => (
+            <ExecutionItem
+              key={index}
+              item={item}
+              isLatest={index === history.length - 1}
+              isInProgress={isInProgress && index === history.length - 1}
+            />
+          ))}
         </div>
       </ScrollArea>
     </div>

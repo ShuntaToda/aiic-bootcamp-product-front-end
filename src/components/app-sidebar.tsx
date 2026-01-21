@@ -8,11 +8,11 @@ import {
   HelpCircle,
   User,
   ChevronDown,
-  Sparkles,
   Database,
   LogOut,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 import {
   Sidebar,
@@ -68,8 +68,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       {/* ヘッダー: ロゴ */}
       <SidebarHeader className="border-b border-border/40 p-4">
         <Link href="/" className="flex items-center gap-2">
-          <Sparkles className="h-6 w-6 text-cyan-400" />
-          <span className="text-xl font-bold">AI Starter</span>
+          <Image
+            src="/logo.png"
+            alt="unison"
+            width={32}
+            height={32}
+            className="h-8 w-8"
+          />
+          <span className="text-xl font-bold">unison</span>
         </Link>
       </SidebarHeader>
 

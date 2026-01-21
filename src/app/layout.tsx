@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AI Starter",
-  description: "AWS AgentCore を使用したチャットアプリケーション",
+  title: "unison",
+  description: "AIエージェントによるAPIテスト支援サービス",
 };
 
 export default function RootLayout({

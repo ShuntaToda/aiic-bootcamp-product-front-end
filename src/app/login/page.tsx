@@ -40,7 +40,7 @@ export default function LoginPage() {
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 to-blue-500">
             <Sparkles className="h-8 w-8 text-white" />
           </div>
-          <CardTitle className="text-2xl font-bold">AI Starter</CardTitle>
+          <CardTitle className="text-2xl font-bold">AIIC Bootcamp Product Front End</CardTitle>
           <p className="text-sm text-muted-foreground">
             アカウントにログインしてください
           </p>

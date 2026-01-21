@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# unison
 
-## Getting Started
+AIエージェントによるAPIテスト支援サービス。Amazon Bedrock AgentCoreを活用したフロントエンドアプリケーション。
 
-First, run the development server:
+## セットアップ
+
+### 環境変数の設定
+
+`.env.local` ファイルをプロジェクトルートに作成し、以下の環境変数を設定してください：
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# AWS認証情報
+AWS_ACCESS_KEY_ID=your_access_key_id
+AWS_SECRET_ACCESS_KEY=your_secret_access_key
+AWS_REGION=us-east-1
+
+# Bedrockモデル設定（オプション）
+BEDROCK_MODEL_ID=anthropic.claude-3-5-sonnet-20241022-v2:0
+
+# モックモード（trueで有効、本番接続時はfalseまたは削除）
+USE_MOCK=false
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 依存関係のインストール
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 開発サーバーの起動
 
-## Learn More
+```bash
+pnpm dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+ブラウザで [http://localhost:3000](http://localhost:3000) を開いてください。
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 技術スタック
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Next.js 15** - Reactフレームワーク
+- **Vercel AI SDK 6** - AIチャット機能
+- **@ai-sdk/amazon-bedrock** - Amazon Bedrockプロバイダー
+- **Tailwind CSS** - スタイリング
+- **shadcn/ui** - UIコンポーネント
 
-## Deploy on Vercel
+## 機能
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Amazon Bedrock AgentCoreとのリアルタイムチャット
+- 実行結果のMarkdown表示
+- モックモードでの開発対応
